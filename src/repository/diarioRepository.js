@@ -12,7 +12,7 @@ export async function inserir(anotacao) {
 
 
 
-export async function alterar(id, pessoa) {
+export async function alterar(id, anotacao) {
     const comando = `
         update tb_anotacao_diario
            set txt_anotacao            = ?,
@@ -30,12 +30,14 @@ export async function alterar(id, pessoa) {
 
 export async function listar() {
     const comando = `
-        select id_anotacao       id,
-               txt_anotacao            nome,
-               dt_anotacao            motivo,
-               id_autor          vinganca,
-          from tb_anotacao_diario
-    `
+        SELECT a.id_anotacao AS id,
+               a.txt_anotacao AS anotacao,
+               a.dt_anotacao AS data,
+               a.id_autor AS autor,
+               au.nm_autor AS nome_autor
+        FROM tb_anotacao_diario a
+        JOIN tb_autor au ON a.id_autor = au.id_autor
+    `;
 
     let [registros] = await con.query(comando);
     return registros;
@@ -44,19 +46,23 @@ export async function listar() {
 
 
 
+
 export async function buscarPorId(id) {
     const comando = `
-        select id_lista_negra       id,
-               txt_anotacao            nome,
-               dt_anotacao            motivo,
-               id_autor          vinganca,
-          from tb_anotacao_diario
-          where id_anotacao = ?
-    `
+        SELECT a.id_anotacao AS id,
+               a.txt_anotacao AS anotacao,
+               a.dt_anotacao AS data,
+               a.id_autor AS autor,
+               au.nm_autor AS nome_autor
+        FROM tb_anotacao_diario a
+        JOIN tb_autor au ON a.id_autor = au.id_autor
+        WHERE a.id_anotacao = ?
+    `;
 
     let [registros] = await con.query(comando, [id]);
     return registros[0];
 }
+
 
 
 
